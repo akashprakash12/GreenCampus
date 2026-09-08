@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+:root {
+  --forest: #0d3b2a;
+  --deep-green: #082c20;
+  --leaf: #4f7f55;
+  --sage: #a8bd8f;
+  --cream: #f1ead4;
+  --terracotta: #bd7654;
+  --white: #fafbf6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  margin: 0;
+  background: var(--deep-green);
+  color: var(--cream);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-cormorant), serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Main cream button */
+
+.hero-primary-button {
+  background-color: var(--cream);
+  color: var(--deep-green);
+}
+
+.hero-primary-button:hover {
+  background-color: var(--white);
+  color: var(--deep-green);
+}
+
+/* Navigation contact buttons */
+
+.nav-contact-button {
+  background-color: var(--cream);
+  color: var(--deep-green);
+}
+
+.nav-contact-button:hover {
+  background-color: var(--white);
+  color: var(--deep-green);
+}
+
+/* Text selection */
+
+::selection {
+  background: var(--sage);
+  color: var(--deep-green);
+}
+
+/* Custom scrollbar */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--leaf);
+  border: 2px solid var(--deep-green);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sage);
+}
+
+/* Reduce animation for users who disable motion */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
