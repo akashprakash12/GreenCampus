@@ -19,7 +19,7 @@ import {
 
 function PlantModel() {
   const plantRef = useRef(null);
-  const { scene } = useGLTF("/models/hero-plant.glb");
+  const { scene } = useGLTF("/models/pothos_plant.glb");
 
   useFrame((state, delta) => {
     if (!plantRef.current) return;
