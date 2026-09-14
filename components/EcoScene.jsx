@@ -66,13 +66,21 @@ export default function EcoScene() {
   const webglReady = canUseWebGL();
   const lowPower = isLowPowerDevice();
   const controls = useControls("Eco Plant", {
-    scale: { value: 0.95, min: 0.5, max: 2, step: 0.05 },
-    xPosition: { value: 0, min: -2, max: 2, step: 0.05 },
+    scale: { value: 0.85, min: 0.5, max: 2, step: 0.05 },
+    xPosition: { value: 0.1, min: -2, max: 2, step: 0.05 },
     yPosition: { value: -0.1, min: -2, max: 1, step: 0.05 },
     zPosition: { value: 0, min: -2, max: 2, step: 0.05 },
     rotationX: { value: 0, min: -Math.PI, max: Math.PI, step: 0.05 },
     rotationY: { value: -0.45, min: -Math.PI, max: Math.PI, step: 0.05 },
     rotationZ: { value: 0, min: -Math.PI, max: Math.PI, step: 0.05 },
+  });
+  const lighting = useControls("Eco Lighting", {
+    ambientIntensity: { value: 1.05, min: 0, max: 2, step: 0.05 },
+    keyIntensity: { value: 2.2, min: 0, max: 5, step: 0.1 },
+    fillIntensity: { value: 0.45, min: 0, max: 2, step: 0.05 },
+    environmentIntensity: { value: 0.65, min: 0, max: 2, step: 0.05 },
+    shadowOpacity: { value: 0.34, min: 0, max: 1, step: 0.02 },
+    shadowBlur: { value: 3.2, min: 0.5, max: 8, step: 0.1 },
   });
 
   if (!webglReady) {
@@ -101,11 +109,11 @@ export default function EcoScene() {
         }}
       >
         <hemisphereLight
-          args={["#f4f8f0", "#29483a", 1.05]}
+          args={["#f4f8f0", "#29483a", lighting.ambientIntensity]}
         />
         <directionalLight
           position={[4, 6, 3]}
-          intensity={2.2}
+          intensity={lighting.keyIntensity}
           color="#fff0d6"
           castShadow={!lowPower}
           shadow-mapSize={[2048, 2048]}
@@ -113,25 +121,30 @@ export default function EcoScene() {
         />
         <directionalLight
           position={[-4, 2, -2]}
-          intensity={0.45}
+          intensity={lighting.fillIntensity}
           color="#c9e3ff"
         />
 
         <Suspense fallback={null}>
           <CampusPlant controls={controls} />
+          <ContactShadows
+            position={[
+              controls.xPosition,
+              controls.yPosition - 1.715 * controls.scale,
+              controls.zPosition + 0.05,
+            ]}
+            scale={3.6}
+            opacity={lighting.shadowOpacity}
+            blur={lighting.shadowBlur}
+            far={3.5}
+            resolution={lowPower ? 128 : 256}
+            color="#10241b"
+          />
           {!lowPower && (
-            <ContactShadows
-              position={[0, -0.12, 0]}
-              scale={3.2}
-              opacity={0.2}
-              blur={3.8}
-              far={3.5}
-              resolution={256}
-              color="#10241b"
+            <Environment
+              preset="studio"
+              environmentIntensity={lighting.environmentIntensity}
             />
-          )}
-          {!lowPower && (
-            <Environment preset="studio" environmentIntensity={0.65} />
           )}
         </Suspense>
       </Canvas>
