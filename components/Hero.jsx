@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
   motion,
@@ -30,10 +29,7 @@ const isHeroVisible = useInView(heroRef, {
     offset: ["start start", "end start"],
   });
 
-  const leftImageY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const rightImageY = useTransform(scrollYProgress, [0, 1], [0, 220]);
   const centerTextY = useTransform(scrollYProgress, [0, 1], [0, 90]);
-  const modelY = useTransform(scrollYProgress, [0, 1], [0, 130]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   return (
@@ -63,56 +59,6 @@ const isHeroVisible = useInView(heroRef, {
         className="absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4f7f55]/20 blur-3xl"
       />
 
-      {/* Tablet left image */}
-
-      <motion.div
-        initial={{ opacity: 0, x: -80, rotate: -8 }}
-        animate={{ opacity: 1, x: 0, rotate: -5 }}
-        transition={{ duration: 1, delay: 0.4 }}
-        style={{ y: leftImageY }}
-        className="absolute -left-10 top-[23%] z-10 hidden h-[320px] w-[230px] overflow-hidden rounded-[8rem_8rem_2rem_2rem] border border-white/10 shadow-2xl lg:block xl:hidden"
-      >
-        <Image
-          src="/images/campus-1.jpg"
-          alt="Green plants on campus"
-          fill
-          priority
-          sizes="230px"
-          className="object-cover"
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#082c20]/60 to-transparent" />
-
-        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs uppercase tracking-[0.25em] text-white">
-          Campus Greenery
-        </p>
-      </motion.div>
-
-      {/* Tablet right image */}
-
-      <motion.div
-        initial={{ opacity: 0, x: 80, rotate: 8 }}
-        animate={{ opacity: 1, x: 0, rotate: 5 }}
-        transition={{ duration: 1, delay: 0.6 }}
-        style={{ y: rightImageY }}
-        className="absolute -right-10 top-[19%] z-10 hidden h-[280px] w-[210px] overflow-hidden rounded-[2rem_2rem_8rem_8rem] border border-white/10 shadow-2xl lg:block xl:hidden"
-      >
-        <Image
-          src="/images/campus-2.jpg"
-          alt="Plants supporting the Green Campus programme"
-          fill
-          priority
-          sizes="210px"
-          className="object-cover"
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#082c20]/60 to-transparent" />
-
-        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs uppercase tracking-[0.25em] text-white">
-          Growing Together
-        </p>
-      </motion.div>
-
       {/* Decorative leaf */}
 
       <motion.div
@@ -130,7 +76,7 @@ const isHeroVisible = useInView(heroRef, {
         <Leaf size={29} />
       </motion.div>
 
-      {/* 3D plant */}
+      {/* 3D plant row */}
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8, x: 80 }}
@@ -140,16 +86,11 @@ const isHeroVisible = useInView(heroRef, {
           delay: 0.5,
           ease: "easeOut",
         }}
-        style={{ y: modelY }}
-        className="absolute right-[-5%] top-[14%] z-10 hidden h-[620px] w-[48%] xl:block"
+        className="absolute inset-0 z-10 h-full w-full"
       >
-        {isHeroVisible && <HeroPlantScene />}
+        {isHeroVisible && <HeroPlantScene active={isHeroVisible} />}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#082c20] via-[#082c20]/60 to-transparent" />
-
-        <p className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs uppercase tracking-[0.25em] text-[#a8bd8f]">
-          Interactive Greenery
-        </p>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#082c20] via-[#082c20]/45 to-transparent md:h-32" />
       </motion.div>
 
       {/* Hero content */}
@@ -159,13 +100,13 @@ const isHeroVisible = useInView(heroRef, {
           y: centerTextY,
           opacity: contentOpacity,
         }}
-        className="relative z-20 mx-auto w-full max-w-7xl text-center xl:text-left"
+        className="absolute inset-x-6 top-[55%] z-20 mx-auto w-auto max-w-7xl -translate-y-1/2 text-center"
       >
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mx-auto mb-7 flex w-fit max-w-full items-center gap-2 rounded-full border border-[#a8bd8f]/30 bg-white/5 px-4 py-2 backdrop-blur xl:mx-0"
+          className="mx-auto mb-7 flex w-fit max-w-full items-center gap-2 rounded-full border border-[#a8bd8f]/30 bg-white/5 px-4 py-2 backdrop-blur"
         >
           <Leaf size={15} className="shrink-0 text-[#a8bd8f]" />
 
@@ -190,7 +131,7 @@ const isHeroVisible = useInView(heroRef, {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="mx-auto mt-8 max-w-2xl text-base leading-7 text-[#c8d0c3] md:text-lg xl:mx-0 xl:max-w-xl"
+          className="mx-auto mt-8 max-w-2xl text-base leading-7 text-[#c8d0c3] md:text-lg"
         >
           Students and staff working together to protect nature, reduce
           waste and build a sustainable future for our campus.
