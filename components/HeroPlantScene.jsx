@@ -9,7 +9,7 @@ import {
   RoundedBox,
   useGLTF,
 } from "@react-three/drei";
-import { Leva, folder, useControls } from "leva";
+import { folder, useControls } from "leva";
 import InteractivePlantScene from "./three/InteractivePlantScene";
 import {
   desktopPlants,
@@ -266,11 +266,6 @@ export default function HeroPlantScene({ active = true }) {
 
   return (
     <SceneErrorBoundary>
-      <Leva
-        hidden={process.env.NODE_ENV === "production"}
-        collapsed={false}
-        titleBar={{ title: "3D Hero Controls" }}
-      />
       <Canvas
         frameloop={active ? "always" : "never"}
         shadows={!lowPower}

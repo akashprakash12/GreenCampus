@@ -1,13 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  Environment,
-  Float,
-  OrbitControls,
-  Sphere,
-} from "@react-three/drei";
+import { Environment, useGLTF } from "@react-three/drei";
+import * as THREE from "three";
 import {
   canUseWebGL,
   isLowPowerDevice,
@@ -15,93 +11,54 @@ import {
   SceneUnavailable,
 } from "./SceneFallback";
 
-function EcoGlobe({ lowPower }) {
-  const groupRef = useRef(null);
-  const ringRef = useRef(null);
+function CampusPlant() {
+  const { scene: sourceScene } = useGLTF("/models/potted_plant.glb");
+  const plantRef = useRef(null);
+  const plant = useMemo(() => {
+    const scene = sourceScene.clone(true);
+    const bounds = new THREE.Box3().setFromObject(scene);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    const scale = 3.4 / Math.max(size.y, 0.001);
+
+    scene.scale.setScalar(scale);
+    scene.position.set(
+      -center.x * scale,
+      -center.y * scale,
+      -center.z * scale,
+    );
+    scene.traverse((object) => {
+      if (object.isMesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+
+    return scene;
+  }, [sourceScene]);
 
   useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.15;
-    }
+    if (!plantRef.current) return;
 
-    if (ringRef.current) {
-      ringRef.current.rotation.z -= delta * 0.1;
-    }
-
-    const mouseX = state.pointer.x * 0.15;
-    const mouseY = state.pointer.y * 0.1;
-
-    if (groupRef.current) {
-      groupRef.current.rotation.x +=
-        (mouseY - groupRef.current.rotation.x) * 0.03;
-
-      groupRef.current.rotation.y +=
-        (mouseX - groupRef.current.rotation.y) * 0.01;
-    }
+    plantRef.current.rotation.y = THREE.MathUtils.damp(
+      plantRef.current.rotation.y,
+      state.pointer.x * 0.18 - 0.45,
+      4,
+      delta,
+    );
+    plantRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.1) * 0.04;
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.25} floatIntensity={0.6}>
-      <group ref={groupRef}>
-        {/* Main green globe */}
-
-        <Sphere args={[1.35, lowPower ? 24 : 40, lowPower ? 24 : 40]}>
-          <meshStandardMaterial
-            color="#4f7f55"
-            roughness={0.55}
-            metalness={0.05}
-          />
-        </Sphere>
-
-        {/* Light green land shapes */}
-
-        <mesh position={[-0.7, 0.5, 1.12]} rotation={[0.2, 0.1, -0.4]}>
-          <sphereGeometry args={[0.38, lowPower ? 12 : 20, lowPower ? 12 : 20]} />
-          <meshStandardMaterial color="#a8bd8f" roughness={0.7} />
-        </mesh>
-
-        <mesh position={[0.55, -0.25, 1.2]} scale={[1, 1.6, 0.6]}>
-          <sphereGeometry args={[0.3, lowPower ? 12 : 20, lowPower ? 12 : 20]} />
-          <meshStandardMaterial color="#a8bd8f" roughness={0.7} />
-        </mesh>
-
-        <mesh position={[0.3, 0.7, 1.15]} scale={[1.5, 0.8, 0.5]}>
-          <sphereGeometry args={[0.27, lowPower ? 12 : 20, lowPower ? 12 : 20]} />
-          <meshStandardMaterial color="#8fa979" roughness={0.7} />
-        </mesh>
-
-        {/* Orbiting ring */}
-
-        <mesh ref={ringRef} rotation={[1.15, 0.2, 0]}>
-          <torusGeometry args={[1.85, 0.018, 8, lowPower ? 48 : 80]} />
-          <meshStandardMaterial color="#f1ead4" transparent opacity={0.55} />
-        </mesh>
-
-        {/* Orbiting leaf */}
-
-        <group position={[1.75, 0.25, 0.2]} rotation={[0, 0, -0.5]}>
-          <mesh scale={[0.25, 0.5, 0.08]}>
-            <sphereGeometry args={[1, lowPower ? 12 : 16, lowPower ? 12 : 16]} />
-            <meshStandardMaterial color="#d3dfbd" roughness={0.6} />
-          </mesh>
-
-          <mesh position={[0, -0.45, 0]} rotation={[0, 0, -0.1]}>
-            <cylinderGeometry args={[0.025, 0.025, 0.6, 8]} />
-            <meshStandardMaterial color="#d3dfbd" />
-          </mesh>
-        </group>
-      </group>
-    </Float>
+    <group ref={plantRef} position={[0, -0.35, 0]}>
+      <primitive object={plant} />
+    </group>
   );
 }
 
 export default function EcoScene() {
-  const [webglReady] = useState(canUseWebGL);
-  const [lowPower] = useState(isLowPowerDevice);
-
-  if (webglReady === null) {
-    return <SceneUnavailable label="Preparing 3D view" />;
-  }
+  const webglReady = canUseWebGL();
+  const lowPower = isLowPowerDevice();
 
   if (!webglReady) {
     return <SceneUnavailable label="3D view unavailable on this browser" />;
@@ -110,43 +67,27 @@ export default function EcoScene() {
   return (
     <SceneErrorBoundary>
       <Canvas
-        dpr={lowPower ? 1 : [1, 1.25]}
-        camera={{ position: [0, 0, 6], fov: 42 }}
+        className="eco-canvas absolute inset-0 !h-full !w-full"
+        dpr={lowPower ? 1 : [1, 1.5]}
+        camera={{ position: [0, 1, 5.8], fov: 34 }}
         gl={{
           antialias: !lowPower,
-          alpha: true,
+          alpha: false,
           powerPreference: lowPower ? "default" : "high-performance",
         }}
       >
-        <ambientLight intensity={1.2} />
+        <color attach="background" args={["#0d3b2a"]} />
+        <ambientLight intensity={1.4} color="#d7e8d2" />
+        <directionalLight position={[4, 6, 5]} intensity={2.8} color="#ffe5b5" />
+        <pointLight position={[-3, 1, 4]} intensity={1.4} color="#8bc49a" />
 
-        <directionalLight
-          position={[4, 5, 4]}
-          intensity={2.5}
-          color="#fff4d6"
-        />
-
-        {!lowPower && (
-          <pointLight
-            position={[-4, -2, 3]}
-            intensity={1.2}
-            color="#7eb797"
-          />
-        )}
-
-        <EcoGlobe lowPower={lowPower} />
-
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate={!lowPower}
-          autoRotateSpeed={0.5}
-          minPolarAngle={Math.PI / 2.8}
-          maxPolarAngle={Math.PI / 1.8}
-        />
-
-        {!lowPower && <Environment preset="forest" />}
+        <Suspense fallback={null}>
+          <CampusPlant />
+          {!lowPower && <Environment preset="forest" />}
+        </Suspense>
       </Canvas>
     </SceneErrorBoundary>
   );
 }
+
+useGLTF.preload("/models/potted_plant.glb");
