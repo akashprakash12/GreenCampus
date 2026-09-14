@@ -50,11 +50,9 @@ export default function EcoShowcase() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 1 }}
-          className="relative h-[520px] overflow-hidden rounded-[3rem] border border-white/10 bg-[#0d3b2a]/70 shadow-[0_30px_100px_rgba(0,0,0,0.25)] lg:h-[calc(100vh-8rem)]"
+          className="relative h-[520px] overflow-hidden lg:h-[calc(100vh-8rem)]"
         >
           <EcoScene />
-
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#082c20]/80 to-transparent" />
 
           <p className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs uppercase tracking-[0.25em] text-[#a8bd8f]">
             Campus Plant
