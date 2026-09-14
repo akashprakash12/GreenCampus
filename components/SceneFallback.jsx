@@ -52,7 +52,9 @@ export class SceneErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
-      return <SceneUnavailable label="3D view unavailable on this browser" />;
+      return this.props.fallback ?? (
+        <SceneUnavailable label="3D view unavailable on this browser" />
+      );
     }
 
     return this.props.children;

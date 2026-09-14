@@ -313,7 +313,13 @@ export default function HeroPlantScene({ active = true }) {
             debug={debug}
             controls={controls}
           />
-          <Environment preset="studio" environmentIntensity={controls.environment} />
+          <SceneErrorBoundary fallback={null}>
+            <Environment
+              files="/models/valley_of_desolation_4k.hdr"
+              background={false}
+              environmentIntensity={controls.environment}
+            />
+          </SceneErrorBoundary>
         </Suspense>
       </Canvas>
     </SceneErrorBoundary>

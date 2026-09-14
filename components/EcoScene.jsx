@@ -75,12 +75,12 @@ export default function EcoScene() {
     rotationZ: { value: 0, min: -Math.PI, max: Math.PI, step: 0.05 },
   });
   const lighting = useControls("Eco Lighting", {
-    ambientIntensity: { value: 1.05, min: 0, max: 2, step: 0.05 },
-    keyIntensity: { value: 2.2, min: 0, max: 5, step: 0.1 },
-    fillIntensity: { value: 0.45, min: 0, max: 2, step: 0.05 },
-    environmentIntensity: { value: 0.65, min: 0, max: 2, step: 0.05 },
-    shadowOpacity: { value: 0.34, min: 0, max: 1, step: 0.02 },
-    shadowBlur: { value: 3.2, min: 0.5, max: 8, step: 0.1 },
+    ambientIntensity: { value: 0.75, min: 0, max: 2, step: 0.05 },
+    keyIntensity: { value: 3, min: 0, max: 5, step: 0.1 },
+    fillIntensity: { value: 0.35, min: 0, max: 2, step: 0.05 },
+    environmentIntensity: { value: 0.45, min: 0, max: 2, step: 0.05 },
+    shadowOpacity: { value: 0.66, min: 0, max: 1, step: 0.02 },
+    shadowBlur: { value: 5.7, min: 0.5, max: 8, step: 0.1 },
   });
 
   if (!webglReady) {
@@ -142,7 +142,8 @@ export default function EcoScene() {
           />
           {!lowPower && (
             <Environment
-              preset="studio"
+              files="/models/valley_of_desolation_4k.hdr"
+              background={false}
               environmentIntensity={lighting.environmentIntensity}
             />
           )}
